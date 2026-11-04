@@ -1,12 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List
 
 app = FastAPI()
 
 # --------------------------------
-# 1. Python Data Structure (Mock DB)
+# 1. Python Data Structure
 # --------------------------------
+
 students = [
     {
         "id": 1,
@@ -34,6 +34,7 @@ students = [
 # --------------------------------
 # 2. Pydantic Model
 # --------------------------------
+
 class Student(BaseModel):
     name: str
     age: int
@@ -43,6 +44,7 @@ class Student(BaseModel):
 # --------------------------------
 # 3. CREATE - POST
 # --------------------------------
+
 @app.post("/students")
 def create_student(student: Student):
     new_student = {
@@ -52,42 +54,58 @@ def create_student(student: Student):
         "course": student.course,
         "city": student.city
     }
+
     students.append(new_student)
+
     return {
         "message": "Student created successfully",
         "data": new_student
     }
 
 # --------------------------------
-# 4. READ ALL & FILTER - GET
+# 4. READ ALL - GET
 # --------------------------------
+
 @app.get("/students")
-def get_students(course: Optional[str] = None, city: Optional[str] = None):
+def get_students():
     result = students
-
-    if course:
-        result = [
-            s for s in result
-            if s["course"].lower() == course.lower()
-        ]
-
-    if city:
-        result = [
-            s for s in result
-            if s["city"].lower() == city.lower()
-        ]
 
     return {
         "total": len(result),
         "data": result
     }
 
-# --------------------------------
-# 5. READ ONE BY ID - GET
-# --------------------------------
 @app.get("/students/{student_id}")
-def get_student_by_id(student_id: int):
+def get_student(student_id: int):
     for student in students:
         if student["id"] == student_id:
-            return {"data": student}
-    raise HTTPException(status_code=404, detail="Student not found")
+            return student
+
+    raise HTTPException(
+        status_code=404,
+        detail="Student not found"
+    )
+
+@app.put("/students/{student_id}")
+def update_student(student_id: int, student: Student):
+    for index, existing_student in enumerate(students):
+        if existing_student["id"] == student_id:
+            updated_student = {
+                "id": student_id,
+                "name": student.name,
+                "age": student.age,
+                "course": student.course,
+                "city": student.city
+            }
+
+            students[index] = updated_student
+
+            return {
+                "message": "Student updated successfully",
+                "data": updated_student
+            }
+
+    raise HTTPException(
+        status_code=404,
+        detail="Student not found"
+    )
