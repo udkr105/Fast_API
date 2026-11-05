@@ -25,17 +25,17 @@ def test_home_api(client):
 # COMMENTED OUT TESTS (Uncomment as needed)
 # ==========================================
 
-# # TEST 2: Get all devices
-# def test_get_all_devices(client):
-#     response = client.get("/devices")
-#     assert response.status_code == 200
-#     data = response.json()
-#     assert isinstance(data, list)
-#     assert len(data) >= 1
-#     assert "id" in data[0]
-#     assert "name" in data[0]
-#     assert "status" in data[0]
-#     assert "owner" in data[0]
+# TEST 2: Get all devices
+def test_get_all_devices(client):
+    response = client.get("/devices")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) >= 1
+    assert "id" in data[0]
+    assert "name" in data[0]
+    assert "status" in data[0]
+    assert "owner" in data[0]
 
 
 # # TEST 3: Get device by ID
